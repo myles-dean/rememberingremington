@@ -346,8 +346,8 @@ function Hero() {
       <DustMotes />
       <DriftingFeather delay={1.2} />
 
-      <div className="relative max-w-7xl mx-auto px-6 lg:px-10 pt-40 pb-24 lg:pt-40 lg:pb-0 lg:min-h-screen grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 items-center lg:items-stretch">
-        <motion.div style={{ y: textY }} className="lg:col-span-7 lg:self-center">
+      <div className="relative max-w-[1400px] mx-auto px-6 sm:px-8 lg:px-12 pt-32 pb-28 sm:pt-36 lg:pt-28 lg:pb-24 lg:min-h-screen grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 xl:gap-16 items-center">
+        <motion.div style={{ y: textY }} className="lg:col-span-7">
           <Reveal>
             <p
               className="uppercase text-[11px] xl:text-[12px] tracking-[0.34em]"
@@ -362,7 +362,7 @@ function Hero() {
           </Reveal>
           <Reveal delay={0.15}>
             <h1
-              className="mt-6 text-[clamp(56px,9vw,160px)] leading-[0.95] tracking-[-0.01em]"
+              className="mt-6 text-[clamp(52px,8.4vw,132px)] leading-[0.95] tracking-[-0.015em]"
               style={{
                 fontFamily: displayFont,
                 color: palette.ink,
@@ -378,7 +378,7 @@ function Hero() {
           </Reveal>
           <Reveal delay={0.35}>
             <p
-              className="mt-7 text-lg md:text-xl xl:text-2xl max-w-xl xl:max-w-2xl leading-relaxed"
+              className="mt-7 text-lg md:text-xl xl:text-[22px] max-w-xl xl:max-w-2xl leading-relaxed"
               style={{
                 fontFamily: bodyFont,
                 color: palette.dusk,
@@ -435,7 +435,7 @@ function Hero() {
         {/* Floating book cover */}
         <motion.div
           style={{ y: coverY }}
-          className="lg:col-span-5 relative flex justify-center lg:justify-end lg:self-end lg:pb-0"
+          className="lg:col-span-5 relative flex justify-center lg:justify-end"
         >
           <motion.div
             initial={{ opacity: 0, y: 40, rotate: -2 }}
@@ -444,7 +444,7 @@ function Hero() {
             className="relative"
           >
             <div
-              className="absolute -inset-6 rounded-2xl"
+              className="absolute -inset-8 rounded-2xl"
               style={{
                 background:
                   "radial-gradient(ellipse at center, rgba(214,178,116,0.35), transparent 70%)",
@@ -459,8 +459,9 @@ function Hero() {
                 repeat: Infinity,
                 ease: "easeInOut",
               }}
-              className="relative w-[280px] md:w-[340px] h-auto rounded-sm"
+              className="relative h-auto rounded-sm"
               style={{
+                width: "clamp(260px, 32vw, 460px)",
                 boxShadow:
                   "0 30px 60px -25px rgba(31,42,54,0.5), 0 10px 25px -10px rgba(31,42,54,0.3)",
               }}
