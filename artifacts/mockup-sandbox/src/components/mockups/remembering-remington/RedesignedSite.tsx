@@ -219,7 +219,6 @@ function Nav() {
     ["The Book", "#book"],
     ["Chapters", "#chapters"],
     ["Author", "#author"],
-    ["Order", "#order"],
     ["Contact", "#contact"],
   ];
   const [scrolled, setScrolled] = useState(false);
@@ -236,7 +235,7 @@ function Nav() {
       className="fixed top-0 left-0 right-0 z-50"
     >
       <div
-        className="mx-auto max-w-6xl mt-4 px-6 py-3 flex items-center justify-between rounded-full transition-all"
+        className="mx-4 md:mx-auto max-w-6xl mt-4 px-5 md:px-6 py-3 flex items-center justify-between rounded-full transition-all"
         style={{
           fontFamily: sansFont,
           background: scrolled
@@ -346,11 +345,11 @@ function Hero() {
       <DustMotes />
       <DriftingFeather delay={1.2} />
 
-      <div className="relative max-w-6xl mx-auto px-6 pt-40 pb-24 grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
+      <div className="relative max-w-7xl mx-auto px-6 lg:px-10 pt-40 pb-24 lg:pt-48 lg:pb-32 grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 items-center">
         <motion.div style={{ y: textY }} className="lg:col-span-7">
           <Reveal>
             <p
-              className="uppercase text-[11px] tracking-[0.34em]"
+              className="uppercase text-[11px] xl:text-[12px] tracking-[0.34em]"
               style={{ color: palette.dustyBlue, fontFamily: sansFont }}
             >
               Lylianne Vaughn Thompson
@@ -362,7 +361,7 @@ function Hero() {
           </Reveal>
           <Reveal delay={0.15}>
             <h1
-              className="mt-6 text-[68px] md:text-[96px] leading-[0.95] tracking-[-0.01em]"
+              className="mt-6 text-[clamp(56px,9vw,160px)] leading-[0.95] tracking-[-0.01em]"
               style={{
                 fontFamily: displayFont,
                 color: palette.ink,
@@ -378,7 +377,7 @@ function Hero() {
           </Reveal>
           <Reveal delay={0.35}>
             <p
-              className="mt-7 text-lg md:text-xl max-w-xl leading-relaxed"
+              className="mt-7 text-lg md:text-xl xl:text-2xl max-w-xl xl:max-w-2xl leading-relaxed"
               style={{
                 fontFamily: bodyFont,
                 color: palette.dusk,
