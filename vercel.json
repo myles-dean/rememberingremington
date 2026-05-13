@@ -1,0 +1,7 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "installCommand": "cd artifacts/mockup-sandbox && npm install",
+  "buildCommand": "cd artifacts/mockup-sandbox && npx vite build --config vite.site.config.ts && mv site-dist/site.html site-dist/index.html",
+  "outputDirectory": "artifacts/mockup-sandbox/site-dist",
+  "framework": null
+}
