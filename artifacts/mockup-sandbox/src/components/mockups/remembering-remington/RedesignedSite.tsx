@@ -219,6 +219,7 @@ function Nav() {
     ["The Book", "#book"],
     ["Chapters", "#chapters"],
     ["Author", "#author"],
+    ["Gallery", "#gallery"],
     ["Contact", "#contact"],
   ];
   const [scrolled, setScrolled] = useState(false);
@@ -345,8 +346,8 @@ function Hero() {
       <DustMotes />
       <DriftingFeather delay={1.2} />
 
-      <div className="relative max-w-7xl mx-auto px-6 lg:px-10 pt-40 pb-24 lg:pt-48 lg:pb-32 grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 items-center">
-        <motion.div style={{ y: textY }} className="lg:col-span-7">
+      <div className="relative max-w-7xl mx-auto px-6 lg:px-10 pt-40 pb-24 lg:pt-40 lg:pb-0 lg:min-h-screen grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 items-center lg:items-stretch">
+        <motion.div style={{ y: textY }} className="lg:col-span-7 lg:self-center">
           <Reveal>
             <p
               className="uppercase text-[11px] xl:text-[12px] tracking-[0.34em]"
@@ -434,7 +435,7 @@ function Hero() {
         {/* Floating book cover */}
         <motion.div
           style={{ y: coverY }}
-          className="lg:col-span-5 relative flex justify-center lg:justify-end"
+          className="lg:col-span-5 relative flex justify-center lg:justify-end lg:self-end lg:pb-0"
         >
           <motion.div
             initial={{ opacity: 0, y: 40, rotate: -2 }}
@@ -1512,21 +1513,9 @@ function Gallery() {
           </Reveal>
           <div className="mt-5">
             <Reveal delay={0.1}>
-              <SectionHeading align="center">Remembering Remington</SectionHeading>
+              <SectionHeading align="center">Remington</SectionHeading>
             </Reveal>
           </div>
-          <Reveal delay={0.25}>
-            <p
-              className="mt-5 text-base leading-relaxed"
-              style={{
-                fontFamily: bodyFont,
-                color: palette.dusk,
-                opacity: 0.8,
-              }}
-            >
-              A small gallery of the boy who taught us what love truly means.
-            </p>
-          </Reveal>
         </div>
 
         <Reveal delay={0.35}>
