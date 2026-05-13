@@ -967,7 +967,8 @@ function Author() {
       style={{ background: palette.cream }}
     >
       <div className="max-w-6xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-12 gap-14 items-center">
-        <Reveal className="lg:col-span-5">
+        {/* Desktop photo composition */}
+        <Reveal className="hidden lg:block lg:col-span-5">
           <div className="relative">
             <motion.div
               animate={{ y: [0, -6, 0] }}
@@ -990,7 +991,7 @@ function Author() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 1.1, delay: 0.3, ease: "easeOut" }}
-              className="absolute -bottom-10 -right-6 w-44 h-44 object-cover rounded-sm hidden md:block"
+              className="absolute -bottom-10 -right-6 w-44 h-44 object-cover rounded-sm"
               style={{
                 border: `6px solid ${palette.cream}`,
                 boxShadow: "0 30px 50px -30px rgba(31,42,54,0.5)",
@@ -1010,6 +1011,22 @@ function Author() {
               </SectionHeading>
             </Reveal>
           </div>
+
+          {/* Mobile-only: Lylianne portrait above the paragraph */}
+          <Reveal delay={0.18} className="lg:hidden">
+            <motion.img
+              src="/images/Lylianne-Thompson.PNG"
+              alt="Lylianne Vaughn Thompson"
+              animate={{ y: [0, -4, 0] }}
+              transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+              className="mt-7 w-full max-w-sm object-cover rounded-sm"
+              style={{
+                aspectRatio: "4/5",
+                boxShadow: "0 30px 50px -30px rgba(31,42,54,0.4)",
+              }}
+            />
+          </Reveal>
+
           <Reveal delay={0.25}>
             <p
               className="mt-7 text-lg leading-[1.85]"
@@ -1040,6 +1057,20 @@ function Author() {
               tutorial in grief.
             </p>
           </Reveal>
+
+          {/* Mobile-only: family photo below the paragraph */}
+          <Reveal delay={0.5} className="lg:hidden">
+            <img
+              src="/images/Hunter-Lyanna-Lylianne--Family-Photo.jpeg"
+              alt="The Thompson family"
+              className="mt-8 w-full object-cover rounded-sm"
+              style={{
+                aspectRatio: "4/5",
+                boxShadow: "0 30px 50px -30px rgba(31,42,54,0.4)",
+              }}
+            />
+          </Reveal>
+
           <Reveal delay={0.55}>
             <div
               className="mt-8 flex items-center gap-4"
@@ -1430,6 +1461,163 @@ function FormField({
   );
 }
 
+const GALLERY_IMAGES = [
+  "/images/IMG_3815_result.avif",
+  "/images/IMG_4471_result.avif",
+  "/images/IMG_4027_result.avif",
+  "/images/IMG_4490_result.avif",
+  "/images/FullSizeRender_result.avif",
+  "/images/IMG_6015_result.avif",
+  "/images/IMG_5615_result.avif",
+  "/images/IMG_6154_result.avif",
+  "/images/IMG_7827_result.avif",
+  "/images/IMG_5423_result.avif",
+  "/images/IMG_7733_result.avif",
+  "/images/IMG_2044_result.avif",
+];
+
+function Gallery() {
+  const [active, setActive] = useState<number | null>(null);
+
+  useEffect(() => {
+    if (active === null) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setActive(null);
+      if (e.key === "ArrowRight")
+        setActive((i) => (i === null ? 0 : (i + 1) % GALLERY_IMAGES.length));
+      if (e.key === "ArrowLeft")
+        setActive((i) =>
+          i === null
+            ? 0
+            : (i - 1 + GALLERY_IMAGES.length) % GALLERY_IMAGES.length
+        );
+    };
+    window.addEventListener("keydown", onKey);
+    document.body.style.overflow = "hidden";
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      document.body.style.overflow = "";
+    };
+  }, [active]);
+
+  return (
+    <section
+      id="gallery"
+      className="relative py-28"
+      style={{ background: palette.ivoryDeep }}
+    >
+      <div className="max-w-6xl mx-auto px-6">
+        <div className="text-center max-w-2xl mx-auto">
+          <Reveal>
+            <SectionEyebrow>In Memory</SectionEyebrow>
+          </Reveal>
+          <div className="mt-5">
+            <Reveal delay={0.1}>
+              <SectionHeading align="center">Remembering Remington</SectionHeading>
+            </Reveal>
+          </div>
+          <Reveal delay={0.25}>
+            <p
+              className="mt-5 text-base leading-relaxed"
+              style={{
+                fontFamily: bodyFont,
+                color: palette.dusk,
+                opacity: 0.8,
+              }}
+            >
+              A small gallery of the boy who taught us what love truly means.
+            </p>
+          </Reveal>
+        </div>
+
+        <Reveal delay={0.35}>
+          <div className="mt-14 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">
+            {GALLERY_IMAGES.map((src, i) => (
+              <motion.button
+                key={src}
+                type="button"
+                onClick={() => setActive(i)}
+                initial={{ opacity: 0, y: 14 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-40px" }}
+                transition={{
+                  duration: 0.7,
+                  delay: (i % 8) * 0.04,
+                  ease: "easeOut",
+                }}
+                whileHover={{ y: -3 }}
+                className="group relative overflow-hidden rounded-sm bg-white"
+                style={{
+                  aspectRatio: "1/1",
+                  boxShadow: "0 18px 30px -22px rgba(31,42,54,0.35)",
+                }}
+                aria-label={`Open photo ${i + 1}`}
+              >
+                <img
+                  src={src}
+                  alt={`Remington — photo ${i + 1}`}
+                  loading="lazy"
+                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.04]"
+                />
+                <div
+                  className="pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                  style={{
+                    background:
+                      "linear-gradient(180deg, rgba(31,42,54,0) 60%, rgba(31,42,54,0.35) 100%)",
+                  }}
+                />
+              </motion.button>
+            ))}
+          </div>
+        </Reveal>
+      </div>
+
+      <AnimatePresence>
+        {active !== null && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.25 }}
+            onClick={() => setActive(null)}
+            className="fixed inset-0 z-[100] flex items-center justify-center p-6 cursor-zoom-out"
+            style={{ background: "rgba(31,42,54,0.86)" }}
+          >
+            <motion.img
+              key={GALLERY_IMAGES[active]}
+              src={GALLERY_IMAGES[active]}
+              alt={`Remington — photo ${active + 1}`}
+              initial={{ scale: 0.96, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.98, opacity: 0 }}
+              transition={{ duration: 0.3, ease: "easeOut" }}
+              onClick={(e) => e.stopPropagation()}
+              className="max-w-[92vw] max-h-[88vh] object-contain rounded-sm cursor-default"
+              style={{ boxShadow: "0 30px 80px -20px rgba(0,0,0,0.6)" }}
+            />
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                setActive(null);
+              }}
+              className="absolute top-5 right-5 w-10 h-10 rounded-full flex items-center justify-center text-xl"
+              style={{
+                background: "rgba(251,247,238,0.12)",
+                color: palette.cream,
+                border: "1px solid rgba(251,247,238,0.25)",
+              }}
+              aria-label="Close"
+            >
+              ×
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </section>
+  );
+}
+
 function Footer() {
   return (
     <footer
@@ -1576,6 +1764,7 @@ export function RedesignedSite() {
       <Author />
       <Order />
       <Contact />
+      <Gallery />
       <Footer />
     </div>
   );
