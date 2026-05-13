@@ -202,9 +202,20 @@ function DriftingFeather({ delay = 0 }: { delay?: number }) {
   );
 }
 
+function smoothScrollTo(href: string) {
+  if (!href.startsWith("#")) return;
+  const id = href.slice(1);
+  const el = document.getElementById(id);
+  if (el) {
+    el.scrollIntoView({ behavior: "smooth", block: "start" });
+    if (history.replaceState) history.replaceState(null, "", href);
+  } else if (id === "home" || id === "") {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+}
+
 function Nav() {
   const items = [
-    ["Home", "#home"],
     ["The Book", "#book"],
     ["Chapters", "#chapters"],
     ["Author", "#author"],
@@ -240,6 +251,10 @@ function Nav() {
       >
         <a
           href="#home"
+          onClick={(e) => {
+            e.preventDefault();
+            window.scrollTo({ top: 0, behavior: "smooth" });
+          }}
           className="flex items-center gap-2"
           style={{ color: palette.ink }}
         >
@@ -258,6 +273,10 @@ function Nav() {
             <li key={label}>
               <a
                 href={href}
+                onClick={(e) => {
+                  e.preventDefault();
+                  smoothScrollTo(href);
+                }}
                 className="relative transition-colors"
                 style={{ color: palette.dusk, fontWeight: 400 }}
               >
@@ -307,7 +326,7 @@ function Hero() {
         className="absolute inset-0"
       >
         <motion.img
-          src="/__mockup/images/bg.jpg"
+          src="/images/bg.jpg"
           alt=""
           initial={{ scale: 1.05 }}
           animate={{ scale: 1.12 }}
@@ -396,6 +415,10 @@ function Hero() {
               </a>
               <a
                 href="#book"
+                onClick={(e) => {
+                  e.preventDefault();
+                  smoothScrollTo("#book");
+                }}
                 className="inline-flex items-center gap-2 px-6 py-4 rounded-full text-sm transition-colors"
                 style={{
                   border: `1px solid ${palette.gold}`,
@@ -428,7 +451,7 @@ function Hero() {
               }}
             />
             <motion.img
-              src="/__mockup/images/Remington-front.jpg"
+              src="/images/Remington-front.jpg"
               alt="Remembering Remington — book cover"
               animate={{ y: [0, -10, 0] }}
               transition={{
@@ -478,7 +501,7 @@ function Memorial() {
               style={{ border: `1px solid ${palette.gold}`, opacity: 0.6 }}
             />
             <img
-              src="/__mockup/images/Remington-Photo.jpeg"
+              src="/images/Remington-Photo.jpeg"
               alt="Remington Smith Thompson"
               className="relative w-full object-cover rounded-sm"
               style={{
@@ -951,8 +974,8 @@ function Author() {
               transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
             >
               <img
-                src="/__mockup/images/Lylianne-Thompson.PNG"
-                alt="Lylianne Vaughn Thompson"
+                src="/images/Hunter-Lyanna-Lylianne--Family-Photo.jpeg"
+                alt="The Thompson family"
                 className="w-full object-cover rounded-sm"
                 style={{
                   aspectRatio: "4/5",
@@ -961,8 +984,8 @@ function Author() {
               />
             </motion.div>
             <motion.img
-              src="/__mockup/images/Hunter-Lyanna-Lylianne--Family-Photo.jpeg"
-              alt="The Thompson family"
+              src="/images/Lylianne-Thompson.PNG"
+              alt="Lylianne Vaughn Thompson"
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
@@ -1058,7 +1081,7 @@ function Order() {
               <div className="md:col-span-5 p-8 md:p-12 flex justify-center"
                 style={{ background: palette.ivoryDeep }}>
                 <motion.img
-                  src="/__mockup/images/Remington-front.jpg"
+                  src="/images/Remington-front.jpg"
                   alt="Remembering Remington — book cover"
                   whileHover={{ rotate: 0, y: -6 }}
                   initial={{ rotate: -3 }}
@@ -1090,9 +1113,9 @@ function Order() {
                     opacity: 0.85,
                   }}
                 >
-                  Available in paperback, hardcover, and e-book. A keepsake
-                  meant to be read slowly, marked up, and shared with anyone
-                  walking through loss.
+                  Available in paperback and hardcover. A keepsake meant to
+                  be read slowly, marked up, and shared with anyone walking
+                  through loss.
                 </p>
                 <div className="mt-7 flex flex-wrap items-center gap-4">
                   <a
@@ -1122,8 +1145,6 @@ function Order() {
                     <span>Paperback</span>
                     <span style={{ color: palette.gold }}>·</span>
                     <span>Hardcover</span>
-                    <span style={{ color: palette.gold }}>·</span>
-                    <span>E-book</span>
                   </div>
                 </div>
               </div>
@@ -1135,8 +1156,53 @@ function Order() {
   );
 }
 
+const REASON_OPTIONS = [
+  "Looking for a guest speaker on this topic?",
+  "Do you need this resource for your event?",
+  "Questions about the book?",
+  "General Inquiry",
+];
+
 function Contact() {
-  const [submitted, setSubmitted] = useState(false);
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [reason, setReason] = useState("");
+  const [subject, setSubject] = useState("");
+  const [message, setMessage] = useState("");
+  const [status, setStatus] = useState<"idle" | "sending" | "success" | "error">("idle");
+
+  async function onSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    if (!name || !email || !reason || !subject || !message) return;
+    setStatus("sending");
+    try {
+      const res = await fetch(
+        "https://formsubmit.co/ajax/info@rememberingremington.com",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+          },
+          body: JSON.stringify({
+            name,
+            email,
+            subject,
+            reason,
+            message,
+            _subject: "[RR Inquiry] " + (reason || subject),
+            _captcha: "false",
+            _template: "table",
+          }),
+        }
+      );
+      if (!res.ok) throw new Error("bad response");
+      setStatus("success");
+    } catch {
+      setStatus("error");
+    }
+  }
+
   return (
     <section
       id="contact"
@@ -1171,107 +1237,173 @@ function Contact() {
         </div>
 
         <Reveal delay={0.35}>
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              setSubmitted(true);
-            }}
-            className="mt-12 grid grid-cols-1 md:grid-cols-2 gap-5"
-            style={{ fontFamily: sansFont }}
-          >
-            <FormField label="Name">
-              <Input
-                placeholder="Your name"
-                className="rounded-sm h-12 bg-white"
+          {status === "success" ? (
+            <motion.div
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="mt-12 text-center px-8 py-16 rounded-sm"
+              style={{
+                background: "#fff",
+                border: `1px solid ${palette.ivoryDeep}`,
+                boxShadow: "0 30px 60px -40px rgba(31,42,54,0.25)",
+              }}
+            >
+              <h3
+                className="text-3xl"
                 style={{
-                  borderColor: "rgba(31,42,54,0.15)",
-                  fontFamily: bodyFont,
+                  fontFamily: displayFont,
+                  color: palette.ink,
+                  fontWeight: 400,
                 }}
-              />
-            </FormField>
-            <FormField label="Email">
-              <Input
-                type="email"
-                placeholder="you@example.com"
-                className="rounded-sm h-12 bg-white"
+              >
+                Thank You
+              </h3>
+              <p
+                className="mt-3 text-sm"
                 style={{
-                  borderColor: "rgba(31,42,54,0.15)",
                   fontFamily: bodyFont,
+                  color: palette.dusk,
+                  opacity: 0.7,
                 }}
-              />
-            </FormField>
-            <div className="md:col-span-2">
-              <FormField label="Reason for reaching out">
-                <Select>
-                  <SelectTrigger
-                    className="rounded-sm h-12 bg-white"
-                    style={{
-                      borderColor: "rgba(31,42,54,0.15)",
-                      fontFamily: bodyFont,
-                    }}
-                  >
-                    <SelectValue placeholder="Choose one" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="speaking">Speaking engagement</SelectItem>
-                    <SelectItem value="resources">Grief resources</SelectItem>
-                    <SelectItem value="press">Press / interview</SelectItem>
-                    <SelectItem value="other">A personal note</SelectItem>
-                  </SelectContent>
-                </Select>
-              </FormField>
-            </div>
-            <div className="md:col-span-2">
-              <FormField label="Message">
-                <Textarea
-                  rows={5}
-                  placeholder="Share what&rsquo;s on your heart…"
-                  className="rounded-sm bg-white"
+              >
+                Your message has been received. We&rsquo;ll be in touch soon.
+              </p>
+            </motion.div>
+          ) : (
+            <form
+              onSubmit={onSubmit}
+              noValidate
+              className="mt-12 grid grid-cols-1 md:grid-cols-2 gap-5"
+              style={{ fontFamily: sansFont }}
+            >
+              <FormField label="Full Name">
+                <Input
+                  required
+                  name="name"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder="Your name"
+                  className="rounded-sm h-12 bg-white"
                   style={{
                     borderColor: "rgba(31,42,54,0.15)",
                     fontFamily: bodyFont,
                   }}
                 />
               </FormField>
-            </div>
-            <div className="md:col-span-2 flex items-center justify-between gap-4 pt-2">
-              <p
-                className="text-xs"
-                style={{ color: palette.dusk, opacity: 0.6 }}
-              >
-                We&rsquo;ll never share your information.
-              </p>
-              <Button
-                type="submit"
-                className="rounded-full px-7 py-6 text-sm"
-                style={{
-                  background: palette.ink,
-                  color: palette.cream,
-                  letterSpacing: 0.2,
-                }}
-              >
-                <Mail size={16} className="mr-2" strokeWidth={1.5} />
-                Send message
-              </Button>
-            </div>
-            <AnimatePresence>
-              {submitted && (
-                <motion.p
-                  initial={{ opacity: 0, y: 6 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0 }}
-                  className="md:col-span-2 text-sm"
+              <FormField label="Email Address">
+                <Input
+                  required
+                  name="email"
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="you@example.com"
+                  className="rounded-sm h-12 bg-white"
                   style={{
-                    color: palette.sage,
+                    borderColor: "rgba(31,42,54,0.15)",
                     fontFamily: bodyFont,
-                    fontStyle: "italic",
+                  }}
+                />
+              </FormField>
+              <div className="md:col-span-2">
+                <FormField label="Reason for Inquiry">
+                  <Select value={reason} onValueChange={setReason}>
+                    <SelectTrigger
+                      className="rounded-sm h-12 bg-white"
+                      style={{
+                        borderColor: "rgba(31,42,54,0.15)",
+                        fontFamily: bodyFont,
+                      }}
+                    >
+                      <SelectValue placeholder="Select a reason…" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {REASON_OPTIONS.map((opt) => (
+                        <SelectItem key={opt} value={opt}>
+                          {opt}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </FormField>
+              </div>
+              <div className="md:col-span-2">
+                <FormField label="Subject">
+                  <Input
+                    required
+                    name="subject"
+                    value={subject}
+                    onChange={(e) => setSubject(e.target.value)}
+                    placeholder="Brief subject line"
+                    className="rounded-sm h-12 bg-white"
+                    style={{
+                      borderColor: "rgba(31,42,54,0.15)",
+                      fontFamily: bodyFont,
+                    }}
+                  />
+                </FormField>
+              </div>
+              <div className="md:col-span-2">
+                <FormField label="Message">
+                  <Textarea
+                    required
+                    name="message"
+                    value={message}
+                    onChange={(e) => setMessage(e.target.value)}
+                    rows={5}
+                    placeholder="Tell us more about your inquiry…"
+                    className="rounded-sm bg-white"
+                    style={{
+                      borderColor: "rgba(31,42,54,0.15)",
+                      fontFamily: bodyFont,
+                    }}
+                  />
+                </FormField>
+              </div>
+              <AnimatePresence>
+                {status === "error" && (
+                  <motion.p
+                    initial={{ opacity: 0, y: 6 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0 }}
+                    className="md:col-span-2 text-sm"
+                    style={{ color: "#c0392b", fontFamily: bodyFont }}
+                  >
+                    Something went wrong. Please try again or email us directly
+                    at{" "}
+                    <a
+                      href="mailto:info@rememberingremington.com"
+                      style={{ textDecoration: "underline" }}
+                    >
+                      info@rememberingremington.com
+                    </a>
+                    .
+                  </motion.p>
+                )}
+              </AnimatePresence>
+              <div className="md:col-span-2 flex items-center justify-between gap-4 pt-2">
+                <p
+                  className="text-xs"
+                  style={{ color: palette.dusk, opacity: 0.6 }}
+                >
+                  We&rsquo;ll never share your information.
+                </p>
+                <Button
+                  type="submit"
+                  disabled={status === "sending"}
+                  className="rounded-full px-7 py-6 text-sm"
+                  style={{
+                    background: palette.ink,
+                    color: palette.cream,
+                    letterSpacing: 0.2,
                   }}
                 >
-                  Thank you. Your note has been received with care.
-                </motion.p>
-              )}
-            </AnimatePresence>
-          </form>
+                  <Mail size={16} className="mr-2" strokeWidth={1.5} />
+                  {status === "sending" ? "Sending…" : "Send Message"}
+                </Button>
+              </div>
+            </form>
+          )}
         </Reveal>
       </div>
     </section>
@@ -1348,6 +1480,10 @@ function Footer() {
                 <li key={label}>
                   <a
                     href={href}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      smoothScrollTo(href);
+                    }}
                     style={{ color: "rgba(251,247,238,0.85)" }}
                     className="hover:opacity-100 opacity-80 transition-opacity"
                   >
@@ -1370,6 +1506,10 @@ function Footer() {
                 <a
                   key={i}
                   href="#contact"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    smoothScrollTo("#contact");
+                  }}
                   className="w-9 h-9 rounded-full flex items-center justify-center transition-all hover:scale-105"
                   style={{
                     border: `1px solid rgba(251,247,238,0.2)`,

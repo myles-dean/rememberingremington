@@ -22,22 +22,19 @@ args = "Start application"
 name = "Start application"
 author = "agent"
 
-[[workflows.workflow.tasks]]
-task = "shell.exec"
-args = "python3 -m http.server 5000 --bind 0.0.0.0"
-waitForPort = 5000
-
 [workflows.workflow.metadata]
 outputType = "webview"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "cd artifacts/mockup-sandbox/site-dist && python3 -m http.server 5000 --bind 0.0.0.0"
+waitForPort = 5000
 
 [[ports]]
 localPort = 5000
 externalPort = 80
 
-[[ports]]
-localPort = 23636
-externalPort = 3000
-
 [deployment]
 deploymentTarget = "static"
-publicDir = "."
+publicDir = "artifacts/mockup-sandbox/site-dist"
+build = ["bash", "-c", "cd artifacts/mockup-sandbox && npm install --no-audit --no-fund --silent && npx vite build --config vite.site.config.ts && mv site-dist/site.html site-dist/index.html"]
